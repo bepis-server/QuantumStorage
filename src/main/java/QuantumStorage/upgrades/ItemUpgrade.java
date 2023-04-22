@@ -29,7 +29,7 @@ public class ItemUpgrade extends ItemBase
     
     public ItemUpgrade()
     {
-        setUnlocalizedName(QuantumStorage.MOD_ID + ".upgrade");
+        setTranslationKey(QuantumStorage.MOD_ID + ".upgrade");
         setRegistryName("upgrade");
         setHasSubtypes(true);
     }
@@ -77,19 +77,19 @@ public class ItemUpgrade extends ItemBase
     }
     
     @Override
-    public String getUnlocalizedName(ItemStack itemStack)
+    public String getTranslationKey(ItemStack itemStack)
     {
         int meta = itemStack.getItemDamage();
         if (meta < 0 || meta >= types.length)
         {
             meta = 0;
         }
-        return super.getUnlocalizedName() + "." + types[meta];
+        return super.getTranslationKey() + "." + types[meta];
     }
     
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag advanced)
     {
-        tooltip.add(TextFormatting.DARK_PURPLE + I18n.format("tooltip" + getUnlocalizedName(stack)));
+        tooltip.add(TextFormatting.DARK_PURPLE + I18n.format("tooltip" + getTranslationKey(stack)));
     }
 }

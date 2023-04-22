@@ -46,7 +46,7 @@ public class BlockMultiStorage extends BlockMultiblockBase
     {
         super(Material.IRON);
         setCreativeTab(CreativeTabQuantumStorage.INSTANCE);
-        setUnlocalizedName(QuantumStorage.MOD_ID + ".multistorage");
+        setTranslationKey(QuantumStorage.MOD_ID + ".multistorage");
         this.setDefaultState(this.getStateFromMeta(0));
         setHardness(2F);
     }

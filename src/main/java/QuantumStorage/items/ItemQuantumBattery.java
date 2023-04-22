@@ -31,7 +31,7 @@ public class ItemQuantumBattery extends ItemBase implements IBauble
 {
     public ItemQuantumBattery()
     {
-        setUnlocalizedName(QuantumStorage.MOD_ID + ".quantum_battery");
+        setTranslationKey(QuantumStorage.MOD_ID + ".quantum_battery");
         setRegistryName("quantum_battery");
         setMaxStackSize(1);
     }

@@ -41,37 +41,37 @@ public class ModBlocks
     
     public static void init()
     {
-        TANK = new AdvancedBlock(new TileQuantumTank()).setUnlocalizedName(QuantumStorage.MOD_ID + ".quantum_tank");
+        TANK = new AdvancedBlock(new TileQuantumTank()).setTranslationKey(QuantumStorage.MOD_ID + ".quantum_tank");
         registerAdvanced(TANK, new TileQuantumTank());
         
-        CRATER = new AdvancedBlock(new TileCrater()).setUnlocalizedName(QuantumStorage.MOD_ID + ".crater");
+        CRATER = new AdvancedBlock(new TileCrater()).setTranslationKey(QuantumStorage.MOD_ID + ".crater");
         registerAdvanced(CRATER, new TileCrater());
         
-        CHEST_IRON = new AdvancedBlock(new TileChestIron()).setUnlocalizedName(QuantumStorage.MOD_ID + ".chest_iron");
+        CHEST_IRON = new AdvancedBlock(new TileChestIron()).setTranslationKey(QuantumStorage.MOD_ID + ".chest_iron");
         registerAdvanced(CHEST_IRON, new TileChestIron());
         
-        CHEST_GOLD = new AdvancedBlock(new TileChestGold()).setUnlocalizedName(QuantumStorage.MOD_ID + ".chest_gold");
+        CHEST_GOLD = new AdvancedBlock(new TileChestGold()).setTranslationKey(QuantumStorage.MOD_ID + ".chest_gold");
         registerAdvanced(CHEST_GOLD, new TileChestGold());
         
-        CHEST_DIAMOND = new AdvancedBlock(new TileChestDiamond()).setUnlocalizedName(QuantumStorage.MOD_ID + ".chest_diamond");
+        CHEST_DIAMOND = new AdvancedBlock(new TileChestDiamond()).setTranslationKey(QuantumStorage.MOD_ID + ".chest_diamond");
         registerAdvanced(CHEST_DIAMOND, new TileChestDiamond());
         
-        DSU = new AdvancedBlock(new TileQuantumStorageUnit()).setUnlocalizedName(QuantumStorage.MOD_ID + ".quantum_storage_unit");
+        DSU = new AdvancedBlock(new TileQuantumStorageUnit()).setTranslationKey(QuantumStorage.MOD_ID + ".quantum_storage_unit");
         registerAdvanced(DSU, new TileQuantumStorageUnit());
         
-        QUANTUM_CRAFTER = new AdvancedBlock(new TileQuantumCrafter()).setUnlocalizedName(QuantumStorage.MOD_ID + ".quantumcrafter");
+        QUANTUM_CRAFTER = new AdvancedBlock(new TileQuantumCrafter()).setTranslationKey(QuantumStorage.MOD_ID + ".quantumcrafter");
         registerAdvanced(QUANTUM_CRAFTER, new TileQuantumCrafter());
         
-        TRASH_CAN = new AdvancedBlock(new TileTrashcan()).setUnlocalizedName(QuantumStorage.MOD_ID + ".trashcan");
+        TRASH_CAN = new AdvancedBlock(new TileTrashcan()).setTranslationKey(QuantumStorage.MOD_ID + ".trashcan");
         registerAdvanced(TRASH_CAN, new TileTrashcan());
         
-        TRASH_CAN_FLUID = new AdvancedBlock(new TileTrashcanFluid()).setUnlocalizedName(QuantumStorage.MOD_ID + ".trashcanfluid");
+        TRASH_CAN_FLUID = new AdvancedBlock(new TileTrashcanFluid()).setTranslationKey(QuantumStorage.MOD_ID + ".trashcanfluid");
         registerAdvanced(TRASH_CAN_FLUID, new TileTrashcanFluid());
         
-        CHEST_QUANIUM = new AdvancedBlock(new TileChestQuantum()).setUnlocalizedName(QuantumStorage.MOD_ID + ".chest_quantum");
+        CHEST_QUANIUM = new AdvancedBlock(new TileChestQuantum()).setTranslationKey(QuantumStorage.MOD_ID + ".chest_quantum");
         registerAdvanced(CHEST_QUANIUM, new TileChestQuantum());
         
-//        CONTROLLER = new AdvancedBlock(new TileController()).setUnlocalizedName(QuantumStorage.MOD_ID + "controller");
+//        CONTROLLER = new AdvancedBlock(new TileController()).setTranslationKey(QuantumStorage.MOD_ID + "controller");
 //        registerAdvanced(CONTROLLER, new TileController());
         
         registerMultiBlocks();

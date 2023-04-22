@@ -19,20 +19,20 @@ public class ItemQuantumBag extends ItemBase implements IColorable
     
     public ItemQuantumBag()
     {
-        setUnlocalizedName(QuantumStorage.MOD_ID + ".quantum_bag");
+        setTranslationKey(QuantumStorage.MOD_ID + ".quantum_bag");
         setRegistryName("quantum_bag");
         setMaxStackSize(1);
     }
     
     @Override
-    public String getUnlocalizedName(ItemStack itemStack)
+    public String getTranslationKey(ItemStack itemStack)
     {
         int meta = itemStack.getItemDamage();
         if (meta < 0 || meta >= COLOURS.length)
         {
             meta = 0;
         }
-        return super.getUnlocalizedName() + "." + COLOURS[meta];
+        return super.getTranslationKey() + "." + COLOURS[meta];
     }
     
     @Override

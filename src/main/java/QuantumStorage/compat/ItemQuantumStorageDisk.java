@@ -28,7 +28,7 @@ public class ItemQuantumStorageDisk extends ItemBase implements IStorageDiskProv
     public ItemQuantumStorageDisk()
     {
         setMaxStackSize(1);
-        setUnlocalizedName(QuantumStorage.MOD_ID + ".quantumstoragedisk");
+        setTranslationKey(QuantumStorage.MOD_ID + ".quantumstoragedisk");
         setRegistryName("quantumstoragedisk");
     }
     

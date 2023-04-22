@@ -22,7 +22,7 @@ public class ItemRemote extends ItemBase
 {
     public ItemRemote()
     {
-        setUnlocalizedName(QuantumStorage.MOD_ID + ".remote");
+        setTranslationKey(QuantumStorage.MOD_ID + ".remote");
         setRegistryName("remote");
         setMaxStackSize(1);
     }

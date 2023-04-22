@@ -22,7 +22,7 @@ public class ItemCrate extends ItemBase
     public ItemCrate()
     {
         setMaxStackSize(64);
-        setUnlocalizedName(QuantumStorage.MOD_ID + ".crate");
+        setTranslationKey(QuantumStorage.MOD_ID + ".crate");
         setRegistryName(QuantumStorage.MOD_ID, "crate");
     }
     

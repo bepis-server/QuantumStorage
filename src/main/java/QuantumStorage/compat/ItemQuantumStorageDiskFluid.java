@@ -28,7 +28,7 @@ public class ItemQuantumStorageDiskFluid extends ItemBase implements IStorageDis
     public ItemQuantumStorageDiskFluid()
     {
         setMaxStackSize(1);
-        setUnlocalizedName(QuantumStorage.MOD_ID + ".quantumstoragediskfluid");
+        setTranslationKey(QuantumStorage.MOD_ID + ".quantumstoragediskfluid");
         setRegistryName("quantumstoragediskfluid");
     }
     
