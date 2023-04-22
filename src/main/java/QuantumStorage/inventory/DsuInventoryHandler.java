@@ -1,5 +1,6 @@
 package QuantumStorage.inventory;
 
+import QuantumStorage.utils.INBTSerializableIntoExisting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -12,7 +13,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Gigabit101 on 06/03/2017.
  */
-public class DsuInventoryHandler extends ItemStackHandler
+public class DsuInventoryHandler extends ItemStackHandler implements INBTSerializableIntoExisting<NBTTagCompound>
 {
     int STORAGE = 0;
     
@@ -32,8 +33,16 @@ public class DsuInventoryHandler extends ItemStackHandler
     }
     
     @Override
+    @Deprecated
     public NBTTagCompound serializeNBT()
     {
+        NBTTagCompound nbt = new NBTTagCompound();
+        this.serializeNBT(nbt);
+        return nbt;
+    }
+
+    @Override
+    public void serializeNBT(NBTTagCompound nbt) { //porkman was here: copy of the original implementation of serializeNBT(), but writing into the given tag instance
         NBTTagList nbtTagList = new NBTTagList();
         for (int i = 0; i < stacks.size(); i++)
         {
@@ -46,12 +55,11 @@ public class DsuInventoryHandler extends ItemStackHandler
                 nbtTagList.appendTag(itemTag);
             }
         }
-        NBTTagCompound nbt = new NBTTagCompound();
+
         nbt.setTag("Items", nbtTagList);
         nbt.setInteger("Size", stacks.size());
-        return nbt;
     }
-    
+
     @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {

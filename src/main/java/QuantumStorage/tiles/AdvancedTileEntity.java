@@ -3,6 +3,7 @@ package QuantumStorage.tiles;
 import QuantumStorage.QuantumStorage;
 import QuantumStorage.client.AdvancedGui;
 import QuantumStorage.client.GuiBuilderQuantumStorage;
+import QuantumStorage.utils.INBTSerializableIntoExisting;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -219,7 +220,7 @@ public abstract class AdvancedTileEntity extends TileEntity
         tagCompound = super.writeToNBT(tagCompound);
         if (getInv() != null)
         {
-            tagCompound.merge(getInv().serializeNBT());
+            INBTSerializableIntoExisting.trySerializeIntoOrMerge(tagCompound, this.getInv());
         }
     }
     

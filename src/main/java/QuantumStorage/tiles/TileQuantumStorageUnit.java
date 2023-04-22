@@ -5,6 +5,7 @@ import QuantumStorage.config.ConfigQuantumStorage;
 import QuantumStorage.init.ModBlocks;
 import QuantumStorage.inventory.DsuInventoryHandler;
 import QuantumStorage.inventory.slot.SlotOutputItemHandler;
+import QuantumStorage.utils.INBTSerializableIntoExisting;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -207,7 +208,7 @@ public class TileQuantumStorageUnit extends AdvancedTileEntity implements ITicka
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         compound = super.writeToNBT(compound);
-        compound.merge(inv.serializeNBT());
+        INBTSerializableIntoExisting.trySerializeIntoOrMerge(compound, this.inv);
         return compound;
     }
     

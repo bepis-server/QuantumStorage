@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class TileQuantumTank extends AdvancedTileEntity implements ITickable
 {
-    FluidTank tank = new FluidTank(Integer.MAX_VALUE);
+    final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
     
     public TileQuantumTank() {}
     
@@ -159,7 +159,7 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         compound = super.writeToNBT(compound);
-        compound.merge(tank.writeToNBT(compound));
+        tank.writeToNBT(compound); //porkman was here: no need to merge() with the returned tag, as they're the same tag lmfao
         return compound;
     }
     
