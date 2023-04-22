@@ -12,7 +12,20 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
+
+plugins {
+    id 'idea'
+}
+
 apply plugin: 'net.minecraftforge.gradle.forge'
+
+idea {
+    module {
+        // For some reason this is necessary for IDEA 2014 workspaces to recognize assets
+        inheritOutputDirs = true
+    }
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -29,8 +42,8 @@ repositories {
         url = "http://maven.modmuss50.me/"
     }
     maven {
-        name "Raoulvdberge"
-        url  "https://repo.raoulvdberge.com/"
+        name 'curseforge'
+        url 'https://cursemaven.com'
     }
     maven {
         name "jei"
@@ -67,7 +80,7 @@ dependencies {
     deobfCompile ('RebornCore:RebornCore-1.12.2:+:universal'){
         transitive = false
     }
-    deobfCompile ('refinedstorage:refinedstorage:1.6-+'){
+    deobfCompile ('curse.maven:refined-storage-243076:2940914'){ //v1.6.16
         transitive = false
     }
     deobfCompile "mezz.jei:jei_1.12:+"
