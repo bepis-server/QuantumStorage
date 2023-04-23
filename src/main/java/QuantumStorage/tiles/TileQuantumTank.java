@@ -38,7 +38,9 @@ import java.util.List;
  */
 public class TileQuantumTank extends AdvancedTileEntity implements ITickable
 {
-    final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
+    final EnhancedFluidTank tank = new EnhancedFluidTank(Integer.MAX_VALUE);
+
+    public transient boolean infiniteWater;
 
     transient FluidStack lastSentStack = null;
     transient int lastSentAmount = 0;
@@ -66,7 +68,6 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        sync();
         if (FluidUtil.interactWithFluidHandler(playerIn, hand, worldIn, pos, side))
         {
             return true;
@@ -112,14 +113,7 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
         
         getBuilder().drawString(gui, "Quantum Tank", 56, 8);
         
-        getBuilder().drawBigBlueBar((AdvancedGui) gui, 30, 50, amount, tank.getCapacity(), mouseX - guiLeft, mouseY - guiTop, "", "Fluid Type: " + name, amount + " mb " + name);
-    }
-    
-    @Override
-    public void readFromNBT(NBTTagCompound compound)
-    {
-        super.readFromNBT(compound);
-        tank.readFromNBT(compound);
+        getBuilder().drawBigBlueBar((AdvancedGui) gui, 30, 50, amount, tank.getCapacity(), mouseX - guiLeft, mouseY - guiTop, "", "Fluid Type: " + name, this.getBuilder().formatQuantityExact(amount) + " mb " + name);
     }
     
     @Override
@@ -144,26 +138,39 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
             RebornCraftingHelper.addShapelessRecipe(new ItemStack(ModBlocks.TANK), new ItemStack(ModBlocks.TANK));
         }
     }
-    
-    @Override
-    public void writeToNBTWithoutCoords(NBTTagCompound tagCompound)
-    {
-        tagCompound = super.writeToNBT(tagCompound);
-        tank.writeToNBT(tagCompound);
-    }
-    
-    @Override
-    public void readFromNBTWithoutCoords(NBTTagCompound compound)
-    {
-        tank.readFromNBT(compound);
-    }
-    
+
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         compound = super.writeToNBT(compound);
         tank.writeToNBT(compound); //porkman was here: no need to merge() with the returned tag, as they're the same tag lmfao
+
         return compound;
+    }
+    
+    @Override
+    public void writeToNBTWithoutCoords(NBTTagCompound tagCompound)
+    {
+        super.writeToNBTWithoutCoords(tagCompound);
+        tank.writeToNBT(tagCompound);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        super.readFromNBT(compound);
+
+        tank.readFromNBT(compound);
+        this.infiniteWater = this.getTileData().getBoolean("infin_water");
+    }
+    
+    @Override
+    public void readFromNBTWithoutCoords(NBTTagCompound compound)
+    {
+        super.readFromNBTWithoutCoords(compound);
+
+        tank.readFromNBT(compound);
+        this.infiniteWater = this.getTileData().getBoolean("infin_water");
     }
     
     @Override
@@ -185,14 +192,23 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
         }
         return null;
     }
-    
-    
+
     @Override
     public void update()
     {
-        sync();
         handleUpgrades();
-        pushFluid(world, getPos(), tank, EnumFacing.UP, EnumFacing.DOWN);
+        if (!this.world.isRemote) {
+            pushFluid(world, getPos(), tank, EnumFacing.UP);
+            pushFluid(world, getPos(), tank, EnumFacing.DOWN);
+        }
+        this.trySync();
+    }
+
+    public void trySync() {
+        if (this.tank.requestUpdate) {
+            this.tank.requestUpdate = false;
+            super.sync();
+        }
     }
 
     @Override
@@ -217,22 +233,19 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
         return Math.abs(currentAmount - lastSentAmount) >= Integer.MAX_VALUE  / 256;
     }
 
-    public static FluidStack pushFluid(World world, BlockPos pos, IFluidHandler fluid, EnumFacing... sides)
+    private static FluidStack pushFluid(World world, BlockPos pos, IFluidHandler fluid, EnumFacing side)
     {
         try
         {
             if (!world.isRemote)
             {
-                for (EnumFacing side : sides)
+                TileEntity tile = world.getTileEntity(pos.offset(side));
+                if (tile != null && !(tile instanceof TileQuantumTank))
                 {
-                    TileEntity tile = world.getTileEntity(pos.offset(side));
-                    if (tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite()))
+                    IFluidHandler other = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite());
+                    if (other != null)
                     {
-                        IFluidHandler other = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite());
-                        if (other != null && !(tile instanceof TileQuantumTank))
-                        {
-                            return fluid.drain(other.fill(fluid.drain(1000, false), true), true);
-                        }
+                        return fluid.drain(other.fill(fluid.drain(1000, false), true), true);
                     }
                 }
             }
@@ -242,12 +255,9 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
     
     public void handleUpgrades()
     {
-        if (this.getTileData().hasKey("infin_water") && this.tank.getFluid() != null && this.tank.getFluid().getFluid() == FluidRegistry.WATER)
+        if (this.tank.isInfiniteWater() && this.tank.getFluidAmount() < this.tank.getCapacity())
         {
-            if (tank.canFill())
-            {
-                tank.fill(tank.getFluid(), true);
-            }
+            this.tank.fill(tank.getFluid(), true);
         }
     }
     
@@ -265,7 +275,31 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
                 {
                     tooltip.add(TextFormatting.GOLD + "Stored Fluid type: " + fluidamount + "mb " + fluidname);
                 }
+
+                NBTTagCompound forgeDataTag = stack.getTagCompound().getCompoundTag("tileEntity").getCompoundTag("ForgeData");
+                if (forgeDataTag != null && forgeDataTag.getBoolean("infin_water")) {
+                    tooltip.add(TextFormatting.DARK_PURPLE + "+ Infinite Water");
+                }
             }
+        }
+    }
+
+    private final class EnhancedFluidTank extends FluidTank {
+        private transient boolean requestUpdate;
+
+        public EnhancedFluidTank(int capacity) {
+            super(capacity);
+        }
+
+        private boolean isInfiniteWater() {
+            return TileQuantumTank.this.infiniteWater && this.getFluid() != null && this.getFluid().getFluid() == FluidRegistry.WATER;
+        }
+
+        @Override
+        protected void onContentsChanged() {
+            super.onContentsChanged();
+
+            this.requestUpdate = true;
         }
     }
 }

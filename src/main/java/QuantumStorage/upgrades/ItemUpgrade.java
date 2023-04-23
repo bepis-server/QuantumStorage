@@ -57,6 +57,7 @@ public class ItemUpgrade extends ItemBase
             if (meta == 3)//water
             {
                 tank.getTileData().setBoolean("infin_water", true);
+                tank.infiniteWater = true;
             }
         }
         return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);

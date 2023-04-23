@@ -1,6 +1,7 @@
 package QuantumStorage.client;
 
 import QuantumStorage.QuantumStorage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import reborncore.client.RenderUtil;
 import reborncore.client.guibuilder.GuiBuilder;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,24 @@ public class GuiBuilderQuantumStorage extends GuiBuilder
     public GuiBuilderQuantumStorage()
     {
         super(GUI_SHEET);
+    }
+
+    public String formatQuantityApprox(int value) {
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getJavaLocale());
+        numberFormat.setMaximumFractionDigits(1);
+        if (value >= 1_000_000_000) {
+            return numberFormat.format(value / 1_000_000_000d) + 'B';
+        } else if (value >= 1_000_000) {
+            return numberFormat.format(value / 1_000_000d) + 'M';
+        } else if (value >= 1_000) {
+            return numberFormat.format(value / 1_000d) + 'K';
+        } else {
+            return numberFormat.format(value);
+        }
+    }
+
+    public String formatQuantityExact(int value) {
+        return NumberFormat.getIntegerInstance(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getJavaLocale()).format(value);
     }
     
     public void drawBigBlueBar(AdvancedGui gui, int x, int y, int value, int max, int mouseX, int mouseY, String suffix, String line2, String format)
@@ -43,7 +63,7 @@ public class GuiBuilderQuantumStorage extends GuiBuilder
         {
             int percentage = percentage(max, value);
             List<String> list = new ArrayList<>();
-            list.add("" + TextFormatting.GOLD + value + "/" + max + suffix);
+            list.add("" + TextFormatting.GOLD + this.formatQuantityExact(value) + "/" + this.formatQuantityExact(max) + suffix);
             list.add(getPercentageColour(percentage) + "" + percentage + "%" + TextFormatting.GRAY + " Full");
             list.add(line2);
             

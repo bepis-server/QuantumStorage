@@ -63,56 +63,59 @@ public class TileQuantumStorageUnit extends AdvancedTileEntity implements ITicka
     {
         try
         {
-            if (!inv.getStackInSlot(INPUT).isEmpty())
+            ItemStack outputStack = this.inv.getStackInSlot(OUTPUT);
+            ItemStack inputStack = this.inv.getStackInSlot(INPUT);
+            ItemStack storageStack = this.inv.getStackInSlot(STORAGE);
+            if (!inputStack.isEmpty())
             {
-                if (inv.getStackInSlot(STORAGE).isEmpty())
+                if (storageStack.isEmpty())
                 {
-                    inv.setStackInSlot(STORAGE, inv.getStackInSlot(INPUT).copy());
-                    inv.setStackInSlot(INPUT, ItemStack.EMPTY);
-                } else if (!inv.getStackInSlot(STORAGE).isEmpty() && ItemUtils.isItemEqual(inv.getStackInSlot(INPUT), inv.getStackInSlot(STORAGE), true, true))
+                    inv.setStackInSlot(STORAGE, storageStack = inputStack.copy());
+                    inv.setStackInSlot(INPUT, inputStack = ItemStack.EMPTY);
+                } else if (ItemUtils.isItemEqual(inputStack, storageStack, true, true))
                 {
-                    inv.getStackInSlot(STORAGE).grow(inv.getStackInSlot(INPUT).getCount());
-                    inv.setStackInSlot(INPUT, ItemStack.EMPTY);
+                    storageStack.grow(inputStack.getCount());
+                    inv.setStackInSlot(INPUT, inputStack = ItemStack.EMPTY);
                 }
             }
             
-            if (!inv.getStackInSlot(STORAGE).isEmpty())
+            if (!storageStack.isEmpty())
             {
-                int size = inv.getStackInSlot(STORAGE).getMaxStackSize();
-                if (inv.getStackInSlot(OUTPUT) == ItemStack.EMPTY || inv.getStackInSlot(OUTPUT).getCount() == 0)
+                int size = storageStack.getMaxStackSize();
+                if (outputStack.isEmpty())
                 {
-                    if (inv.getStackInSlot(STORAGE).getCount() >= size)
+                    if (storageStack.getCount() >= size)
                     {
-                        inv.setStackInSlot(OUTPUT, inv.getStackInSlot(STORAGE).copy());
-                        inv.getStackInSlot(OUTPUT).setCount(size);
-                        inv.getStackInSlot(STORAGE).shrink(size);
+                        inv.setStackInSlot(OUTPUT, outputStack = storageStack.copy());
+                        outputStack.setCount(size);
+                        storageStack.shrink(size);
                     } else
                     {
-                        inv.setStackInSlot(OUTPUT, inv.getStackInSlot(STORAGE));
-                        inv.setStackInSlot(STORAGE, ItemStack.EMPTY);
+                        inv.setStackInSlot(OUTPUT, outputStack = storageStack);
+                        inv.setStackInSlot(STORAGE, storageStack = ItemStack.EMPTY);
                     }
                 }
-                if (inv.getStackInSlot(STORAGE).getCount() != 0 && ItemUtils.isItemEqual(inv.getStackInSlot(STORAGE), inv.getStackInSlot(OUTPUT), true, true) && inv.getStackInSlot(OUTPUT).getCount() <= size - 1)
+                if (storageStack.getCount() != 0 && ItemUtils.isItemEqual(storageStack, outputStack, true, true) && outputStack.getCount() <= size - 1)
                 {
-                    inv.getStackInSlot(OUTPUT).grow(1);
-                    inv.getStackInSlot(STORAGE).shrink(1);
+                    outputStack.grow(1);
+                    storageStack.shrink(1);
                 }
             }
             handleUpgrades();
-            checksync();
+            sync();
         } catch (Exception e)
         {
             e.printStackTrace();
         }
     }
-    
-    public void checksync()
-    {
+
+    @Override
+    public void sync() {
         DsuInventoryHandler handler = (DsuInventoryHandler) inv;
         if(handler.requestUpdate)
         {
             handler.requestUpdate = false;
-            sync();
+            super.sync();
         }
     }
 
@@ -171,29 +174,13 @@ public class TileQuantumStorageUnit extends AdvancedTileEntity implements ITicka
         if (this.getInv().getStackInSlot(STORAGE) != ItemStack.EMPTY && this.getInv().getStackInSlot(OUTPUT) != null)
         {
             this.getBuilder().drawBigBlueBar((AdvancedGui) gui, 31, 43, this.getInv().getStackInSlot(STORAGE).getCount() + this.getInv().getStackInSlot(OUTPUT).getCount(), Integer.MAX_VALUE, mouseX - guiLeft, mouseY - guiTop, "Stored", getInv().getStackInSlot(OUTPUT).getDisplayName(),
-                    formatQuantity(this.getInv().getStackInSlot(STORAGE).getCount() + this.getInv().getStackInSlot(OUTPUT).getCount()));
+                    this.getBuilder().formatQuantityApprox(this.getInv().getStackInSlot(STORAGE).getCount() + this.getInv().getStackInSlot(OUTPUT).getCount()));
         }
         if (this.getInv().getStackInSlot(STORAGE) == ItemStack.EMPTY && this.getInv().getStackInSlot(OUTPUT) != ItemStack.EMPTY)
         {
             this.getBuilder().drawBigBlueBar((AdvancedGui) gui, 31, 43, this.getInv().getStackInSlot(OUTPUT).getCount(), Integer.MAX_VALUE, mouseX - guiLeft, mouseY - guiTop, "Stored", getInv().getStackInSlot(OUTPUT).getDisplayName(),
-                    formatQuantity(this.getInv().getStackInSlot(STORAGE).getCount() + this.getInv().getStackInSlot(OUTPUT).getCount()));
+                    this.getBuilder().formatQuantityApprox(this.getInv().getStackInSlot(STORAGE).getCount() + this.getInv().getStackInSlot(OUTPUT).getCount()));
         }
-    }
-    
-    //TODO move to RC
-    public static final DecimalFormat QUANTITY_FORMATTER = new DecimalFormat("####0.#", DecimalFormatSymbols.getInstance(Locale.US));
-    
-    //TODO move to RC
-    public static String formatQuantity(int qty)
-    {
-        if (qty >= 1000000)
-        {
-            return QUANTITY_FORMATTER.format((float) qty / 1000000F) + "M";
-        } else if (qty >= 1000)
-        {
-            return QUANTITY_FORMATTER.format((float) qty / 1000F) + "K";
-        }
-        return String.valueOf(qty);
     }
     
     @Override

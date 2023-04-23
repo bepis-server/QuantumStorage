@@ -50,7 +50,7 @@ public abstract class AdvancedTileEntity extends TileEntity
     private EnumFacing facing;
     public ItemStackHandler inv = null;
 
-    private ReferenceSet<EntityPlayerMP> watchingPlayers;
+    private transient ReferenceSet<EntityPlayerMP> watchingPlayers;
     
     protected AdvancedTileEntity()
     {
@@ -59,15 +59,16 @@ public abstract class AdvancedTileEntity extends TileEntity
     }
 
     @Override
-    protected void setWorldCreate(World worldIn) {
-        this.watchingPlayers = worldIn.isRemote ? null : new ReferenceArraySet<>();
+    public void validate() {
+        this.watchingPlayers = this.world.isRemote ? null : new ReferenceArraySet<>();
 
-        super.setWorldCreate(worldIn);
+        super.validate();
     }
 
     public void addWatcher(EntityPlayer player) {
         if (!this.world.isRemote) {
             checkState(this.watchingPlayers.add((EntityPlayerMP) player), "player %s is already watching %s at %s", player, this, this.getPos());
+            this.sync();
         }
     }
 
@@ -253,7 +254,7 @@ public abstract class AdvancedTileEntity extends TileEntity
                     return;
                 }
 
-                for (EntityPlayerMP player : playersTrackingThis) {
+                for (EntityPlayerMP player : playersTrackingThis) { //we assume that any players that are watching this tile entity are also tracking it
                     player.connection.sendPacket(packet);
                 }
             }
@@ -267,6 +268,10 @@ public abstract class AdvancedTileEntity extends TileEntity
     public void writeToNBTWithoutCoords(NBTTagCompound tagCompound)
     {
         tagCompound = super.writeToNBT(tagCompound);
+        tagCompound.removeTag("x");
+        tagCompound.removeTag("y");
+        tagCompound.removeTag("z");
+
         if (getInv() != null)
         {
             INBTSerializableIntoExisting.trySerializeIntoOrMerge(tagCompound, this.getInv());
@@ -275,7 +280,13 @@ public abstract class AdvancedTileEntity extends TileEntity
     
     public void readFromNBTWithoutCoords(NBTTagCompound compound)
     {
-        getInv().deserializeNBT(compound);
+        BlockPos pos = this.pos;
+        super.readFromNBT(compound);
+        this.pos = pos;
+
+        if (this.getInv() != null) {
+            getInv().deserializeNBT(compound);
+        }
     }
     
     public abstract Block getBlock();
