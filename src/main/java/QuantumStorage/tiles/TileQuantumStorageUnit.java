@@ -46,10 +46,13 @@ import java.util.Locale;
  */
 public class TileQuantumStorageUnit extends AdvancedTileEntity implements ITickable
 {
-    int STORAGE = 0;
-    int INPUT = 1;
-    int OUTPUT = 2;
-    
+    private static final int STORAGE = 0;
+    private static final int INPUT = 1;
+    private static final int OUTPUT = 2;
+
+    private transient ItemStack lastSentStack = ItemStack.EMPTY;
+    private transient int lastSentCount = 0;
+
     public TileQuantumStorageUnit()
     {
         this.inv = new DsuInventoryHandler();
@@ -108,10 +111,29 @@ public class TileQuantumStorageUnit extends AdvancedTileEntity implements ITicka
         DsuInventoryHandler handler = (DsuInventoryHandler) inv;
         if(handler.requestUpdate)
         {
+            handler.requestUpdate = false;
             sync();
         }
     }
-    
+
+    @Override
+    protected boolean pollSyncAllowed(boolean hasWatcher) {
+        if (!super.pollSyncAllowed(hasWatcher)) {
+            return false;
+        }
+
+        ItemStack currentStack = this.inv.getStackInSlot(OUTPUT);
+        ItemStack currentStorageStack = this.inv.getStackInSlot(STORAGE);
+        int currentCount = currentStack.getCount() + currentStorageStack.getCount();
+        if (!ItemUtils.isItemEqual(currentStack, this.lastSentStack, true, true) || (hasWatcher && currentCount != this.lastSentCount)) {
+            this.lastSentStack = currentStack;
+            this.lastSentCount = currentCount;
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public String getName()
     {

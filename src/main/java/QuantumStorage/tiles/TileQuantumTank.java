@@ -39,7 +39,10 @@ import java.util.List;
 public class TileQuantumTank extends AdvancedTileEntity implements ITickable
 {
     final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
-    
+
+    transient FluidStack lastSentStack = null;
+    transient int lastSentAmount = 0;
+
     public TileQuantumTank() {}
     
     @Override
@@ -191,8 +194,29 @@ public class TileQuantumTank extends AdvancedTileEntity implements ITickable
         handleUpgrades();
         pushFluid(world, getPos(), tank, EnumFacing.UP, EnumFacing.DOWN);
     }
-    
-    
+
+    @Override
+    protected boolean pollSyncAllowed(boolean hasWatcher) {
+        if (!super.pollSyncAllowed(hasWatcher)) {
+            return false;
+        }
+
+        FluidStack currentStack = this.tank.getFluid();
+        int currentAmount = this.tank.getFluidAmount();
+        if (currentStack != this.lastSentStack
+            || (currentAmount != this.lastSentAmount && (hasWatcher || isFluidAmountChangedEnoughToTriggerSync(currentAmount, this.lastSentAmount)))) {
+            this.lastSentStack = currentStack;
+            this.lastSentAmount = currentAmount;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static boolean isFluidAmountChangedEnoughToTriggerSync(int currentAmount, int lastSentAmount) {
+        return Math.abs(currentAmount - lastSentAmount) >= Integer.MAX_VALUE  / 256;
+    }
+
     public static FluidStack pushFluid(World world, BlockPos pos, IFluidHandler fluid, EnumFacing... sides)
     {
         try

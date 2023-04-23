@@ -49,6 +49,10 @@ repositories {
         name "jei"
         url "http://dvs1.progwml6.com/files/maven"
     }
+    maven {
+        name = "JitPack"
+        url = "https://jitpack.io/"
+    }
 }
 
 // define the properties file
@@ -84,6 +88,10 @@ dependencies {
         transitive = false
     }
     deobfCompile "mezz.jei:jei_1.12:+"
+
+    deobfProvided("com.github.OpenCubicChunks.CubicChunks:cubicchunks:9dcb135c2990f1de0d0fd9e418121d3476288c11") {
+        transitive = false
+    }
 }
 
 processResources

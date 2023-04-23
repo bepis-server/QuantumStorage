@@ -2,6 +2,7 @@ package QuantumStorage;
 
 import QuantumStorage.command.CommandBuildMultiBlock;
 import QuantumStorage.compat.CompatHandler;
+import QuantumStorage.compat.CubicChunksCompat;
 import QuantumStorage.config.ConfigQuantumStorage;
 import QuantumStorage.handler.QunatumBagImpl;
 import QuantumStorage.init.ModBlocks;
@@ -56,6 +57,8 @@ public class QuantumStorage
         {
             CompatHandler.init();
         }
+
+        CubicChunksCompat.init();
         
         proxy.registerRenders();
         

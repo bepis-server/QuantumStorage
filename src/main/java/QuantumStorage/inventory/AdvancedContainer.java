@@ -6,8 +6,11 @@ import QuantumStorage.tiles.chests.TileChestGold;
 import QuantumStorage.tiles.chests.TileChestIron;
 import invtweaks.api.container.ChestContainer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
 import reborncore.common.container.RebornContainer;
+
+import static com.google.common.base.Preconditions.*;
 
 /**
  * Created by Gigabit101 on 17/03/2017.
@@ -21,6 +24,9 @@ public class AdvancedContainer extends RebornContainer
     {
         super(machine);
         this.machine = machine;
+
+        machine.addWatcher(player);
+
         if (machine.getSlots() != null)
         {
             for (Slot s : machine.getSlots())
@@ -31,7 +37,14 @@ public class AdvancedContainer extends RebornContainer
         drawPlayersInv(player, machine.inventoryOffsetX(), machine.inventoryOffsetY());
         drawPlayersHotBar(player, machine.inventoryOffsetX(), machine.inventoryOffsetY() + 58);
     }
-    
+
+    @Override
+    public void onContainerClosed(EntityPlayer playerIn) {
+        this.machine.removeWatcher(playerIn);
+
+        super.onContainerClosed(playerIn);
+    }
+
     @ChestContainer.RowSizeCallback
     public int getNumColumns()
     {

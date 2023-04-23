@@ -3,12 +3,18 @@ package QuantumStorage.tiles;
 import QuantumStorage.QuantumStorage;
 import QuantumStorage.client.AdvancedGui;
 import QuantumStorage.client.GuiBuilderQuantumStorage;
+import QuantumStorage.compat.CubicChunksCompat;
 import QuantumStorage.utils.INBTSerializableIntoExisting;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
+import it.unimi.dsi.fastutil.objects.ReferenceList;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +29,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,6 +40,8 @@ import reborncore.common.network.VanillaPacketDispatcher;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.*;
+
 /**
  * Created by Gigabit101 on 17/03/2017.
  */
@@ -40,11 +49,32 @@ public abstract class AdvancedTileEntity extends TileEntity
 {
     private EnumFacing facing;
     public ItemStackHandler inv = null;
+
+    private ReferenceSet<EntityPlayerMP> watchingPlayers;
     
     protected AdvancedTileEntity()
     {
         super();
         this.facing = EnumFacing.NORTH;
+    }
+
+    @Override
+    protected void setWorldCreate(World worldIn) {
+        this.watchingPlayers = worldIn.isRemote ? null : new ReferenceArraySet<>();
+
+        super.setWorldCreate(worldIn);
+    }
+
+    public void addWatcher(EntityPlayer player) {
+        if (!this.world.isRemote) {
+            checkState(this.watchingPlayers.add((EntityPlayerMP) player), "player %s is already watching %s at %s", player, this, this.getPos());
+        }
+    }
+
+    public void removeWatcher(EntityPlayer player) {
+        if (!this.world.isRemote) {
+            checkState(this.watchingPlayers.remove((EntityPlayerMP) player), "player %s isn't watching %s at %s", player, this, this.getPos());
+        }
     }
     
     public EnumFacing getFacing()
@@ -212,7 +242,26 @@ public abstract class AdvancedTileEntity extends TileEntity
     
     public void sync()
     {
-        VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this);
+        //VanillaPacketDispatcher.dispatchTEToNearbyPlayers(this);
+        if (this.world instanceof WorldServer) { //isRemote check is useless as sometimes world is null due to garbage code
+            WorldServer world = (WorldServer) this.world;
+            List<EntityPlayerMP> playersTrackingThis = CubicChunksCompat.findPlayersTrackingPosition(world, this.getPos());
+
+            if (!playersTrackingThis.isEmpty() && this.pollSyncAllowed(!this.watchingPlayers.isEmpty())) {
+                SPacketUpdateTileEntity packet = this.getUpdatePacket();
+                if (packet == null) {
+                    return;
+                }
+
+                for (EntityPlayerMP player : playersTrackingThis) {
+                    player.connection.sendPacket(packet);
+                }
+            }
+        }
+    }
+
+    protected boolean pollSyncAllowed(boolean hasWatcher) {
+        return true;
     }
     
     public void writeToNBTWithoutCoords(NBTTagCompound tagCompound)
