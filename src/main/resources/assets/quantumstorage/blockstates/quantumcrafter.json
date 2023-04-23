@@ -2,16 +2,17 @@
   "forge_marker":1,
   "defaults":{
     "transform":"forge:default-block",
-    "model":"quantumstorage:quantumcrafter",
+    "model":"forge:multi-layer",
+    "custom": {
+      "base": "quantumstorage:quantumcrafter#base",
+      "Mipped Cutout": "quantumstorage:quantumcrafter#base",
+      "Translucent": "quantumstorage:quantumcrafter#translucent"
+    },
     "textures":{
       "particle":"quantumstorage:blocks/quantum_tank/dsutop"
     }
   },
   "variants":{
-    "inventory":{
-      "transform":"forge:default-block",
-      "textures":{}
-    },
     "facing":{
       "north":{
 
@@ -33,13 +34,17 @@
       },
       "false":{
         "textures":{
-
         }
       }
     },
     "inventory": {
-      "model": "quantumstorage:quantumcrafter",
-      "textures": {}
-    }
+      "model": "quantumstorage:quantumcrafter_full"
+    },
+    "base": [{
+      "model":"quantumstorage:quantumcrafter"
+    }],
+    "translucent": [{
+      "model":"quantumstorage:quantumcrafter_translucent"
+    }]
   }
 }

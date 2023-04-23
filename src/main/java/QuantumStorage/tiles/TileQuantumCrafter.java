@@ -13,6 +13,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ITickable;
@@ -170,5 +171,11 @@ public class TileQuantumCrafter extends AdvancedTileEntity implements ITickable
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getInv());
         }
         return super.getCapability(capability, facing);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+        return layer == BlockRenderLayer.CUTOUT_MIPPED || layer == BlockRenderLayer.TRANSLUCENT;
     }
 }

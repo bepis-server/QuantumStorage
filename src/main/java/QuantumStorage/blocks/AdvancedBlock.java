@@ -253,15 +253,16 @@ public class AdvancedBlock extends BlockContainer
         EnumFacing facing = getSideFromint(facingInt);
         return this.getDefaultState().withProperty(FACING, facing).withProperty(ACTIVE, active);
     }
-    
+
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    @Override
+    public BlockRenderLayer getRenderLayer()
     {
         if (advancedTileEntity != null)
         {
             return advancedTileEntity.getBlockLayer();
         }
-        return BlockRenderLayer.CUTOUT;
+        return BlockRenderLayer.CUTOUT_MIPPED;
     }
     
     @Override
@@ -273,7 +274,11 @@ public class AdvancedBlock extends BlockContainer
     @Override
     public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
     {
-        return layer == BlockRenderLayer.CUTOUT_MIPPED || layer == BlockRenderLayer.TRANSLUCENT;
+        if (advancedTileEntity != null)
+        {
+            return advancedTileEntity.canRenderInLayer(state, layer);
+        }
+        return super.canRenderInLayer(state, layer);
     }
     
     @Override

@@ -307,10 +307,17 @@ public abstract class AdvancedTileEntity extends TileEntity
     public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag advanced)
     {
     }
-    
+
+    @SideOnly(Side.CLIENT)
     public BlockRenderLayer getBlockLayer()
     {
         return BlockRenderLayer.SOLID;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer)
+    {
+        return layer == this.getBlockLayer();
     }
     
     @Override

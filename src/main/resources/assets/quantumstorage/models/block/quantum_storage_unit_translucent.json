@@ -1,0 +1,40 @@
+{
+	"credit": "Made with Blockbench, a free, modern block model editor by JannisX11 - Model Made By TheMattaBase",
+	"textures": {
+		"3": "quantumstorage:blocks/qsu/glass_gray",
+		"4": "quantumstorage:blocks/qsu/glass_gray",
+		"particle": "blocks/qsu/dsuside"
+	},
+	"elements": [
+		{
+			"name": "Glass",
+			"from": [1, 6, 1],
+			"to": [15, 15, 15],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [1, 1, 15, 10], "texture": "#3"},
+				"east": {"uv": [1, 1, 15, 10], "texture": "#3"},
+				"south": {"uv": [1, 1, 15, 10], "texture": "#3"},
+				"west": {"uv": [1, 1, 15, 10], "texture": "#3"},
+				"up": {"uv": [1, 1, 15, 15], "texture": "#4"},
+				"down": {"uv": [1, 1, 15, 15], "texture": "#4"}
+			}
+		},
+		{
+			"name": "Glass2",
+			"from": [1, 6, 1],
+			"to": [15, 15, 15],
+			"shade": true,
+			"faces": {
+				"north": {"uv": [1, 1, 15, 10], "texture": "#3"},
+				"east": {"uv": [1, 1, 15, 10], "texture": "#3"},
+				"south": {"uv": [1, 1, 15, 10], "texture": "#3"},
+				"west": {"uv": [1, 1, 15, 10], "texture": "#3"},
+				"up": {"uv": [1, 1, 15, 15], "texture": "#4"},
+				"down": {"uv": [1, 1, 15, 15], "texture": "#4"}
+			}
+		}
+	],
+	"custom": {
+	}
+}

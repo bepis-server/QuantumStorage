@@ -220,13 +220,13 @@ public class TileQuantumStorageUnit extends AdvancedTileEntity implements ITicka
         INBTSerializableIntoExisting.trySerializeIntoOrMerge(compound, this.inv);
         return compound;
     }
-    
+
     @Override
-    public BlockRenderLayer getBlockLayer()
-    {
-        return BlockRenderLayer.CUTOUT;
+    @SideOnly(Side.CLIENT)
+    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+        return layer == BlockRenderLayer.CUTOUT_MIPPED || layer == BlockRenderLayer.TRANSLUCENT;
     }
-    
+
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
     {
