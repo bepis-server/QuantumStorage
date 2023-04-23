@@ -102,15 +102,14 @@ public class TileQuantumStorageUnit extends AdvancedTileEntity implements ITicka
                 }
             }
             handleUpgrades();
-            sync();
+            trySync();
         } catch (Exception e)
         {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void sync() {
+    public void trySync() {
         DsuInventoryHandler handler = (DsuInventoryHandler) inv;
         if(handler.requestUpdate)
         {
